@@ -10,6 +10,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 /**
  * Created by Priyanka.
  */
+
 open class BaseActivity : AppCompatActivity() {
 
     private var connectionLiveData: ConnectionLiveData? = null
