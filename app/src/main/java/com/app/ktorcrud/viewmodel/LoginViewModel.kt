@@ -1,11 +1,18 @@
 package com.app.ktorcrud.viewmodel
 
+import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.liveData
 import com.app.ktorcrud.R
 import com.app.ktorcrud.apicall.ApiServiceImpl
+import com.app.ktorcrud.datasource.PAGE_SIZE
+import com.app.ktorcrud.datasource.UserDatasource
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
 import com.app.ktorcrud.response.Data
@@ -19,17 +26,18 @@ import kotlinx.coroutines.launch
 /**
  * Created by Priyanka.
  */
-class LoginViewModel(private val apiServiceImpl: ApiServiceImpl) : ViewModel() {
+class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
+    ViewModel() {
 
-    val isNetworkAvailable = MutableLiveData<Boolean>()
+    val isNetworkAvailable = MutableLiveData<Boolean?>()
     var email = ObservableField<String>()
     var password = ObservableField<String>()
     var name = ObservableField<String>()
     var job = ObservableField<String>()
-    private val eventsChannel = Channel<AllEvents>()
+    internal val eventsChannel = Channel<AllEvents>()
     val allEventsFlow = eventsChannel.receiveAsFlow()
     private val _loginResponse = MutableLiveData<LoginResponse?>()
-    val loginResponse get() = _loginResponse
+    private val loginResponse get() = _loginResponse
 
     private val _userListResponse = MutableLiveData<ArrayList<Data>?>()
     val userListResponse get() = _userListResponse
@@ -61,30 +69,40 @@ class LoginViewModel(private val apiServiceImpl: ApiServiceImpl) : ViewModel() {
                             {
                                 eventsChannel.send(AllEvents.Loading(false))
                                 eventsChannel.send(AllEvents.DynamicError(it))
-                            },
-                            {
-                                loginResponse.postValue(it)
-                                eventsChannel.send(AllEvents.SuccessBool(true, 1))
-                            })
+                            }
+                        ) {
+                            eventsChannel.send(AllEvents.Loading(false))
+                            loginResponse.postValue(it)
+                            eventsChannel.send(AllEvents.SuccessBool(true, 1))
+                        }
                 }
             }
         }
     }
 
-    fun getUsers(page: Int) {
+    private val pagedUserListLiveData =
+        Pager(PagingConfig(pageSize = PAGE_SIZE), pagingSourceFactory = {
+            UserDatasource(apiServiceImpl)
+        }).flow
+
+
+    fun getUsers() {
         viewModelScope.launch {
             when {
                 !isNetworkAvailable.value!! -> {
                     eventsChannel.send(AllEvents.StringResource(R.string.noInternet))
                 }
                 else -> {
-                    apiServiceImpl.getUserList(page).either({
-                        eventsChannel.send(AllEvents.DynamicError(it))
-                    }, {
-                        userListResponse.postValue(it.data)
-                        eventsChannel.send(AllEvents.SuccessBool(true, 2))
-                        eventsChannel.send(AllEvents.Success(it.data))
-                    })
+                    eventsChannel.send(AllEvents.Loading(true))
+                    pagedUserListLiveData.collect {
+                        viewModelScope.launch {
+                            eventsChannel.send(AllEvents.Loading(false))
+                            Log.e("Logger", "onCreate: $it")
+//                            userListResponse.postValue(it)
+                            eventsChannel.send(AllEvents.SuccessBool(true, 2))
+                            eventsChannel.send(AllEvents.Success(it))
+                        }
+                    }
                 }
             }
         }
@@ -106,10 +124,10 @@ class LoginViewModel(private val apiServiceImpl: ApiServiceImpl) : ViewModel() {
                     apiServiceImpl.updateUser(2, UpdateUserRequest(nameString!!, jobString!!))
                         .either({
                             eventsChannel.send(AllEvents.DynamicError(it))
-                        }, {
+                        }) {
                             eventsChannel.send(AllEvents.SuccessBool(true, 3))
                             eventsChannel.send(AllEvents.Success(it))
-                        })
+                        }
                 }
             }
         }
@@ -125,10 +143,10 @@ class LoginViewModel(private val apiServiceImpl: ApiServiceImpl) : ViewModel() {
                     apiServiceImpl.deleteUser(2)
                         .either({
                             eventsChannel.send(AllEvents.DynamicError(it))
-                        }, {
+                        }) {
                             eventsChannel.send(AllEvents.SuccessBool(true, 3))
                             eventsChannel.send(AllEvents.Success(it))
-                        })
+                        }
                 }
             }
         }

@@ -14,7 +14,7 @@ import androidx.lifecycle.LiveData
 /**
  * Created by Priyanka.
  */
-class ConnectionLiveData(val context: Context) : LiveData<Boolean>() {
+class ConnectionLiveData(val context: Context) : LiveData<ConnectionModel>() {
 
     private var connectivityManager: ConnectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -74,11 +74,11 @@ class ConnectionLiveData(val context: Context) : LiveData<Boolean>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             connectivityManagerCallback = object : ConnectivityManager.NetworkCallback() {
                 override fun onAvailable(network: Network) {
-                    postValue(true)
+                    postValue(ConnectionModel(0, true))
                 }
 
                 override fun onLost(network: Network) {
-                    postValue(false)
+                    postValue(ConnectionModel(0, false))
                 }
             }
             return connectivityManagerCallback
@@ -99,13 +99,13 @@ class ConnectionLiveData(val context: Context) : LiveData<Boolean>() {
                                 NetworkCapabilities.NET_CAPABILITY_VALIDATED
                             )
                         ) {
-                            postValue(true)
+                            postValue(ConnectionModel(0, true))
                         }
                     }
                 }
 
                 override fun onLost(network: Network) {
-                    postValue(false)
+                    postValue(ConnectionModel(0, false))
                 }
             }
             return connectivityManagerCallback
@@ -124,18 +124,21 @@ class ConnectionLiveData(val context: Context) : LiveData<Boolean>() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val nw = connectivityManager.activeNetwork
             if (nw == null) {
-                postValue(false)
+                postValue(ConnectionModel(0, false))
             } else {
                 val actNw = connectivityManager.getNetworkCapabilities(nw)
                 postValue(
-                    actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || actNw.hasTransport(
-                        NetworkCapabilities.TRANSPORT_CELLULAR
-                    ) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+                    ConnectionModel(
+                        0,
+                        actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || actNw.hasTransport(
+                            NetworkCapabilities.TRANSPORT_CELLULAR
+                        ) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+                    )
                 )
             }
         } else {
             val nwInfo = connectivityManager.activeNetworkInfo
-            postValue(nwInfo != null && nwInfo.isConnected)
+            postValue(ConnectionModel(0, nwInfo != null && nwInfo.isConnected))
         }
     }
 }

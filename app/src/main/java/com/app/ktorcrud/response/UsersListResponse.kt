@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class UsersListResponse(
-    @SerializedName("page") var page: Int? = null,
-    @SerializedName("per_page") var perPage: Int? = null,
-    @SerializedName("total") var total: Int? = null,
-    @SerializedName("total_pages") var totalPages: Int? = null,
+    @SerializedName("page") var page: Int? = 1,
+    @SerializedName("per_page") var perPage: Int? = 6,
+    @SerializedName("total") var total: Int? = 1,
+    @SerializedName("total_pages") var total_pages: Int? = 1,
     @SerializedName("data") var data: ArrayList<Data> = arrayListOf(),
     @SerializedName("support") var support: Support? = Support()
 )

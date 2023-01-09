@@ -2,10 +2,10 @@ package com.app.ktorcrud.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.app.ktorcrud.adapter.DashboardAdapter
+import androidx.paging.PagingData
+import com.app.ktorcrud.adapter.DashboardAdapterPagination
 import com.app.ktorcrud.databinding.ActivityHomeBinding
 import com.app.ktorcrud.response.Data
 import com.app.ktorcrud.utils.AllEvents
@@ -19,18 +19,22 @@ class HomeActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        loginViewModel.getUsers(1)
+//        loginViewModel.getUsers(1)
         binding.fab.setOnClickListener {
             startActivity(Intent(this@HomeActivity, UserActivity::class.java))
         }
+
         lifecycleScope.launch {
+            loginViewModel.getUsers()
             loginViewModel.allEventsFlow.collect { event ->
                 when (event) {
                     is AllEvents.Success<*> -> {
-                        val dashboardAdapter = DashboardAdapter(
+                        /*val dashboardAdapter = DashboardAdapter(
                             event.data as ArrayList<Data>,
                             this@HomeActivity
-                        )
+                        )*/
+                        val dashboardAdapter = DashboardAdapterPagination(this@HomeActivity)
+                        dashboardAdapter.submitData(lifecycle, event.data as PagingData<Data>)
                         binding.rvSpends.adapter = dashboardAdapter
                     }
                     else -> {
