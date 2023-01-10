@@ -2,9 +2,11 @@ package com.app.ktorcrud.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
+import androidx.paging.map
 import com.app.ktorcrud.adapter.DashboardAdapterPagination
 import com.app.ktorcrud.databinding.ActivityHomeBinding
 import com.app.ktorcrud.response.Data
@@ -33,6 +35,9 @@ class HomeActivity : BaseActivity() {
                             event.data as ArrayList<Data>,
                             this@HomeActivity
                         )*/
+                        (event.data as PagingData<Data>).map {
+                            Log.e("Logger", "onCreate: ${it.id!!}")
+                        }
                         val dashboardAdapter = DashboardAdapterPagination(this@HomeActivity)
                         dashboardAdapter.submitData(lifecycle, event.data as PagingData<Data>)
                         binding.rvSpends.adapter = dashboardAdapter

@@ -2,7 +2,10 @@ package com.app.ktorcrud.apicall
 
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
-import com.app.ktorcrud.response.*
+import com.app.ktorcrud.response.CommonErrorResponse
+import com.app.ktorcrud.response.LoginResponse
+import com.app.ktorcrud.response.UpdateUserResponse
+import com.app.ktorcrud.response.UsersListResponse
 import com.app.ktorcrud.utils.Either
 import com.app.ktorcrud.utils.Failure
 import com.google.gson.Gson
@@ -24,7 +27,7 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         }
     }
 
-    override suspend fun getUserList(page:Int): Either<String, UsersListResponse> {
+    override suspend fun getUserList(page: Int): Either<String, UsersListResponse> {
         return try {
             Either.Right(apiService.getUsers(page))
         } catch (ex: Exception) {
@@ -32,9 +35,12 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         }
     }
 
-    override suspend fun updateUser(page: Int, updateUserRequest: UpdateUserRequest): Either<String, UpdateUserResponse> {
+    override suspend fun updateUser(
+        page: Int,
+        updateUserRequest: UpdateUserRequest
+    ): Either<String, UpdateUserResponse> {
         return try {
-            Either.Right(apiService.updateUsers(page,updateUserRequest))
+            Either.Right(apiService.updateUsers(page, updateUserRequest))
         } catch (ex: Exception) {
             Either.Left(ex.errorMessage())
         }
@@ -51,10 +57,14 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
     private suspend fun Exception.errorMessage() =
         when (this) {
             is ResponseException -> {
-                Gson().fromJson(
-                    response.readText(Charset.defaultCharset()),
-                    CommonErrorResponse::class.java
-                ).error!!
+                if (response.status.value == 404) {
+                    response.status.description
+                } else {
+                    Gson().fromJson(
+                        response.readText(Charset.defaultCharset()),
+                        CommonErrorResponse::class.java
+                    ).error!!
+                }
             }
             else -> {
                 localizedMessage!!

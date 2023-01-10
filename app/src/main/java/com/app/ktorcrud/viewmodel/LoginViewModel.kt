@@ -1,14 +1,11 @@
 package com.app.ktorcrud.viewmodel
 
-import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.liveData
 import com.app.ktorcrud.R
 import com.app.ktorcrud.apicall.ApiServiceImpl
 import com.app.ktorcrud.datasource.PAGE_SIZE
@@ -82,7 +79,11 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
 
     private val pagedUserListLiveData =
         Pager(PagingConfig(pageSize = PAGE_SIZE), pagingSourceFactory = {
-            UserDatasource(apiServiceImpl)
+            UserDatasource(apiServiceImpl) {
+                viewModelScope.launch {
+                    eventsChannel.send(AllEvents.DynamicError(it.error))
+                }
+            }
         }).flow
 
 
@@ -97,7 +98,6 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                     pagedUserListLiveData.collect {
                         viewModelScope.launch {
                             eventsChannel.send(AllEvents.Loading(false))
-                            Log.e("Logger", "onCreate: $it")
 //                            userListResponse.postValue(it)
                             eventsChannel.send(AllEvents.SuccessBool(true, 2))
                             eventsChannel.send(AllEvents.Success(it))

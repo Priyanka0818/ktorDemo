@@ -13,12 +13,8 @@ import org.koin.dsl.module
 val appModule = module {
     single { provideApiService() }
     single { provideApiServiceImpl(get()) }
-    single { provideDataSource(get()) }
     factory { LoginViewModel(get()) }
 }
-
-fun provideDataSource(apiService: ApiServiceImpl) =
-    UserDatasource(apiService)
 
 fun provideApiService() = ApiService(ktorHttpClient)
 fun provideApiServiceImpl(apiService: ApiService) = ApiServiceImpl(apiService)
