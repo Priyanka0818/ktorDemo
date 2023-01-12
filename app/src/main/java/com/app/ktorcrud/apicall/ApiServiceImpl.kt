@@ -2,10 +2,7 @@ package com.app.ktorcrud.apicall
 
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
-import com.app.ktorcrud.response.CommonErrorResponse
-import com.app.ktorcrud.response.LoginResponse
-import com.app.ktorcrud.response.UpdateUserResponse
-import com.app.ktorcrud.response.UsersListResponse
+import com.app.ktorcrud.response.*
 import com.app.ktorcrud.utils.Either
 import com.app.ktorcrud.utils.Failure
 import com.google.gson.Gson
@@ -13,6 +10,8 @@ import com.google.gson.JsonObject
 import io.ktor.client.features.*
 import io.ktor.client.statement.*
 import io.ktor.utils.io.charsets.*
+import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 /**
  * Created by Priyanka.
@@ -52,6 +51,14 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         } catch (ex: Exception) {
             Either.Left(ex.errorMessage())
         }
+    }
+
+    override fun uploadImage(file: File): Flow<FileUploadResult> {
+        return apiService.uploadImage(file)
+    }
+
+    override fun downloadImage(file: String): Flow<FileUploadResult> {
+        return apiService.downloadImage(file)
     }
 
     private suspend fun Exception.errorMessage() =

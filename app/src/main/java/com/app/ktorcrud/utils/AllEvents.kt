@@ -10,6 +10,7 @@ sealed class AllEvents {
     data class SuccessBool(val message: Boolean, val code: Int) : AllEvents()
     data class Success<T>(val data: T) : AllEvents()
     data class Loading(val load: Boolean) : AllEvents()
+    data class Progress(val progress: Int) : AllEvents()
     data class DynamicError(val error: String) : AllEvents()
     class StringResource(@StringRes val resId: Int, vararg val args: Any?) : AllEvents()
 

@@ -1,5 +1,6 @@
 package com.app.ktorcrud.viewmodel
 
+import android.util.Log
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,12 +14,14 @@ import com.app.ktorcrud.datasource.UserDatasource
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
 import com.app.ktorcrud.response.Data
+import com.app.ktorcrud.response.FileUploadResult
 import com.app.ktorcrud.response.LoginResponse
 import com.app.ktorcrud.utils.AllEvents
 import com.app.ktorcrud.utils.validateEmail
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.io.File
 
 /**
  * Created by Priyanka.
@@ -28,6 +31,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
 
     val isNetworkAvailable = MutableLiveData<Boolean?>()
     var email = ObservableField<String>()
+    var progress = ObservableField<Int>()
     var password = ObservableField<String>()
     var name = ObservableField<String>()
     var job = ObservableField<String>()
@@ -35,7 +39,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
     val allEventsFlow = eventsChannel.receiveAsFlow()
     private val _loginResponse = MutableLiveData<LoginResponse?>()
     private val loginResponse get() = _loginResponse
-
+    var filePath = ""
     private val _userListResponse = MutableLiveData<ArrayList<Data>?>()
     val userListResponse get() = _userListResponse
 
@@ -147,6 +151,50 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                             eventsChannel.send(AllEvents.SuccessBool(true, 3))
                             eventsChannel.send(AllEvents.Success(it))
                         }
+                }
+            }
+        }
+    }
+
+    fun uploadImage(file: File) {
+        viewModelScope.launch {
+            apiServiceImpl.uploadImage(file).collect {
+                when (it) {
+                    is FileUploadResult.Progress -> {
+                        Log.e("TAG", "uploadImage: ${it.progress}")
+                        progress.set(it.progress)
+//                        eventsChannel.send(AllEvents.Progress(it.progress))
+                    }
+                    is FileUploadResult.Success -> {
+                        Log.e("TAG", "uploadImage: ${it}")
+                        eventsChannel.send(AllEvents.Success(it.data))
+                    }
+                    else -> {
+                        it as FileUploadResult.Error
+                        eventsChannel.send(AllEvents.DynamicError(it.message))
+                    }
+                }
+            }
+        }
+    }
+
+    fun downloadImage() {
+        viewModelScope.launch {
+            apiServiceImpl.downloadImage(filePath).collect {
+                when (it) {
+                    is FileUploadResult.Progress -> {
+                        Log.e("TAG", "uploadImage: ${it.progress}")
+                        progress.set(it.progress)
+//                        eventsChannel.send(AllEvents.Progress(it.progress))
+                    }
+                    is FileUploadResult.Success -> {
+                        Log.e("TAG", "uploadImage: ${it}")
+                        eventsChannel.send(AllEvents.Success(it.data))
+                    }
+                    else -> {
+                        it as FileUploadResult.Error
+                        eventsChannel.send(AllEvents.DynamicError(it.message))
+                    }
                 }
             }
         }

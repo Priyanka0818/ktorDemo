@@ -19,7 +19,9 @@ private const val TIME_OUT = 60_000
 val ktorHttpClient = HttpClient(Android) {
 
     defaultRequest {
-        host = "reqres.in/api"
+//        host = "reqres.in/api"
+        host = "api.upload.io/v2/accounts/FW25b1r"
+//        host = "upcdn.io/FW25b1r"
         url {
             protocol = URLProtocol.HTTPS
         }
@@ -55,6 +57,6 @@ val ktorHttpClient = HttpClient(Android) {
     }
 
     install(DefaultRequest) {
-        header(HttpHeaders.Authorization, "Bearer")
+        header(HttpHeaders.Authorization, "Bearer public_FW25b1r73Z92jneE6jRB9JVpkRRn")
     }
 }
