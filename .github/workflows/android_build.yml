@@ -11,6 +11,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    steps:
+      -name: Checkout Code
+        uses: actions/checkout@v1
 
 #    steps:
 #      - name: Checout Code
