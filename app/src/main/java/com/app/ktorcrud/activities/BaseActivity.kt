@@ -19,6 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 open class BaseActivity : AppCompatActivity() {
 
     private var connectionLiveData: ConnectionLiveData? = null
+
     val loginViewModel: LoginViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
