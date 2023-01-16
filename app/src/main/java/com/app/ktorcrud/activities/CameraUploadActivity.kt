@@ -31,6 +31,7 @@ class CameraUploadActivity : BaseActivity() {
     private val binding by lazy { ActivityCameraUploadBinding.inflate(layoutInflater) }
     lateinit var currentPhotoPath: String
     var photoFile: File? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
