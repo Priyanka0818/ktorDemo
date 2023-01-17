@@ -13,17 +13,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-      - name: Set up ruby env
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.2.0 # omit if .ruby-version file exists in project, or replace with your team’s supported ruby version
-          bundler-cache: true
-      - name: Install Bundler
-        run: gem install bundler
+#      - name: Set up JDK
+#        uses: actions/setup-java@v1
+#        with:
+#          java-version: 1.8
+#      - name: Set up ruby env
+#        uses: ruby/setup-ruby@v1
+#        with:
+#          ruby-version: 3.2.0 # omit if .ruby-version file exists in project, or replace with your team’s supported ruby version
+#          bundler-cache: true
+#      - name: Install Bundler
+#        run: gem install bundler
 
       - name: Install gems
         run: bundle install
@@ -31,9 +31,9 @@ jobs:
 #        run: bundle exec fastlane supply init
       - name: Build app
         run: bundle exec fastlane build_dev
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: assets
-          path:
-            ${{ github.workspace }}/app/build/outputs/bundle/release
+#      - name: Upload build artifacts
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: assets
+#          path:
+#            ${{ github.workspace }}/app/build/outputs/bundle/release
