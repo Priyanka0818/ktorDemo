@@ -10,7 +10,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up ruby env
@@ -24,4 +24,4 @@ jobs:
       - name: Install gems
         run: bundle install
       - name: Build app
-        run: bundle exec fastlane android build_dev
+        run: bundle exec fastlane android test
