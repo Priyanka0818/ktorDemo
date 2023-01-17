@@ -27,7 +27,7 @@ jobs:
 
       - name: Install gems
         run: bundle update
-      -run: bundle install
+#      -run: bundle install
 #      - name: supply init
 #        run: bundle exec fastlane supply init
       - name: Build app
