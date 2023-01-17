@@ -27,8 +27,10 @@ jobs:
 
       - name: Install gems
         run: bundle install
+      - name: supply init
+        run: bundle exec fastlane supply init
       - name: Build app
-        run: fastlane build_dev
+        run: bundle exec fastlane build_dev
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
