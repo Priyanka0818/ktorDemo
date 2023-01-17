@@ -27,8 +27,8 @@ jobs:
 
       - name: Install gems
         run: bundle install
-      - name: supply init
-        run: bundle exec fastlane supply init
+#      - name: supply init
+#        run: bundle exec fastlane supply init
       - name: Build app
         run: bundle exec fastlane build_dev
       - name: Upload build artifacts
