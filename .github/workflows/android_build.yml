@@ -24,4 +24,4 @@ jobs:
       - name: Install gems
         run: bundle install
       - name: Build app
-        run: bundle exec fastlane build_dev
+        run: bundle exec fastlane android build_dev
