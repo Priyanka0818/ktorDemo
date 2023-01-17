@@ -18,6 +18,14 @@ jobs:
         with:
           ruby-version: 3.2.0 # omit if .ruby-version file exists in project, or replace with your team’s supported ruby version
           bundler-cache: true
+      - name: Cache Ruby - Bundler
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys:
+             ${{ runner.os }}-gems-
+
       - name: Install bundle
         run:
           bundle config path vendor/bundle
