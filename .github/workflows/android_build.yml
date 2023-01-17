@@ -13,4 +13,9 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up ruby env
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7.2 # omit if .ruby-version file exists in project, or replace with your team’s supported ruby version
+          bundler-cache: true
       - run: fastlane build_dev
