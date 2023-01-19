@@ -38,8 +38,8 @@ platform :android do
     desc "Build release app bundle"
     lane :build_bundle do
      gradle(
-        task: "assemble"
-        build_type: "Release"
+        task: "assemble",
+        build_type: "Release",
         properties: {
             "android.injected.signing.store.file" => "./jks/ktorcrud.jks",
             "android.injected.signing.store.password" => "ktorcrud",

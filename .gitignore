@@ -13,3 +13,9 @@
 .cxx
 local.properties
 /.idea/
+/app/build/generated/
+/app/build/intermediates/
+/app/build/kotlin/
+/app/build/kotlinToolingMetadata/
+/app/build/tmp/
+/build/
