@@ -30,8 +30,8 @@ jobs:
 #      -run: bundle install
 #      - name: supply init
 #        run: bundle exec fastlane supply init
-#      - name: Build app
-#        run: bundle exec fastlane build_dev
+      - name: Build app
+        run: bundle exec fastlane build_dev
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
