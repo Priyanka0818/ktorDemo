@@ -41,7 +41,7 @@ platform :android do
         task: "assemble",
         build_type: "Release",
         properties: {
-            "android.injected.signing.store.file" => ".\jks\ktorcrud.jks",
+            "android.injected.signing.store.file" => "../jks/ktorcrud.jks",
             "android.injected.signing.store.password" => "ktorcrud",
             "android.injected.signing.key.alias" => "ktorcrud",
             "android.injected.signing.key.password" => "ktorcrud",
