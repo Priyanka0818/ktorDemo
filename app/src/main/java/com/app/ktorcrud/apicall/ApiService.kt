@@ -41,7 +41,7 @@ class ApiService(private val client: HttpClient) {
             try {
                 send(FileUploadResult.Success(response))
             } catch (e: Exception) {
-                send(FileUploadResult.Error("", e))
+                send(FileUploadResult.Error(e.errorMessage()))
             }
         }
     }
@@ -61,7 +61,7 @@ class ApiService(private val client: HttpClient) {
             try {
                 send(FileUploadResult.Success(response as FileUploadResponse))
             } catch (e: Exception) {
-                send(FileUploadResult.Error("", e))
+                send(FileUploadResult.Error(e.errorMessage()))
             }
         }
     }

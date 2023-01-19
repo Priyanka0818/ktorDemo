@@ -60,24 +60,26 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
     override fun downloadImage(file: String): Flow<FileUploadResult> {
         return apiService.downloadImage(file)
     }
+}
 
-    private suspend fun Exception.errorMessage() =
-        when (this) {
-            is ResponseException -> {
-                if (response.status.value == 404) {
-                    response.status.description
-                } else {
-                    Gson().fromJson(
-                        response.readText(Charset.defaultCharset()),
-                        CommonErrorResponse::class.java
-                    ).error!!
-                }
-            }
-            else -> {
-                localizedMessage!!
+
+suspend fun Exception.errorMessage() =
+    when (this) {
+        is ResponseException -> {
+            if (response.status.value == 404) {
+                response.status.description
+            } else {
+                Gson().fromJson(
+                    response.readText(Charset.defaultCharset()),
+                    CommonErrorResponse::class.java
+                ).error!!
             }
         }
-}
+        else -> {
+            localizedMessage!!
+        }
+    }
+
 
 fun Exception.toCustomExceptions() = when (this) {
     is ServerResponseException -> Failure.HttpErrorInternalServerError(this)

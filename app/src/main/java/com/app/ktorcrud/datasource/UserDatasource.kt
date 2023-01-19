@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.app.ktorcrud.apicall.ApiServiceImpl
+import com.app.ktorcrud.apicall.errorMessage
 import com.app.ktorcrud.response.Data
 import com.app.ktorcrud.response.UsersListResponse
 import com.app.ktorcrud.utils.AllEvents
@@ -35,7 +36,6 @@ class UserDatasource(
                 apiService.getUserList(nextPage).either({
                     exception = it
                     exceptionCallback(AllEvents.DynamicError(it))
-                    excep.postValue(exception)
                 }) {
                     userModel = it
                     userListResponse.postValue(userModel?.data)
@@ -49,6 +49,7 @@ class UserDatasource(
                 nextKey = nextPage + 1
             )
         } catch (e: Exception) {
+            exceptionCallback(AllEvents.DynamicError(e.errorMessage()))
             return LoadResult.Error(e)
         }
     }

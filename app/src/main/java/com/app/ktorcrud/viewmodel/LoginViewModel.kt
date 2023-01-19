@@ -37,11 +37,8 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
     var job = ObservableField<String>()
     internal val eventsChannel = Channel<AllEvents>()
     val allEventsFlow = eventsChannel.receiveAsFlow()
-    private val _loginResponse = MutableLiveData<LoginResponse?>()
-    private val loginResponse get() = _loginResponse
     var filePath = ""
-    private val _userListResponse = MutableLiveData<ArrayList<Data>?>()
-    val userListResponse get() = _userListResponse
+
 
     fun login() {
 
@@ -73,7 +70,6 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                             }
                         ) {
                             eventsChannel.send(AllEvents.Loading(false))
-                            loginResponse.postValue(it)
                             eventsChannel.send(AllEvents.SuccessBool(true, 1))
                         }
                 }
