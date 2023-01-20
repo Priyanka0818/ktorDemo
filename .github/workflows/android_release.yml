@@ -29,8 +29,8 @@ jobs:
         run: chmod +x gradlew
       - name: Create Code Signing Certificate
         run:
-          mkdir "app/keystore"
-          echo $ANDROID_KEYSTORE | base64 -di > "app/keystore/ktorcrud.jks
+          mkdir app/keystore
+          echo $ANDROID_KEYSTORE | base64 -di > app/keystore/ktorcrud.jks
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
