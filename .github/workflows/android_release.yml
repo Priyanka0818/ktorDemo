@@ -1,4 +1,4 @@
-name: Android Build
+name: Android Release
 
 
 on:
@@ -23,11 +23,6 @@ jobs:
         run: chmod +x gradlew
       - name: Build apk
         run: bundle exec fastlane build_apk
-#      - name: Upload APK
-#        uses: actions/upload-artifact@v1
-#        with:
-#          name: app
-#          path: app/build/outputs/apk/release/app-release.apk
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
         with:
