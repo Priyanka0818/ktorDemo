@@ -1,4 +1,4 @@
-name: Android Release
+name: Android Build
 
 
 on:
@@ -33,4 +33,4 @@ jobs:
         with:
           name: assets
           path:
-            ${{ github.workspace }}/app/build/apk/release
+            ${{ github.workspace }}/app/build/outputs/apk/release
