@@ -20,8 +20,6 @@ jobs:
       RUNNER_PATH: /home/runner/work/ktorDemo/ktorDemo
     steps:
       - uses: actions/checkout@v2
-        run:
-          echo ANDROID_KEYSTORE | base64 --decode > output.jks
       - name: Set up ruby env
         uses: ruby/setup-ruby@v1
         with:
@@ -30,6 +28,9 @@ jobs:
         run: bundle install
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Decode
+        run:
+          echo ANDROID_KEYSTORE | base64 --decode > output.jks
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
