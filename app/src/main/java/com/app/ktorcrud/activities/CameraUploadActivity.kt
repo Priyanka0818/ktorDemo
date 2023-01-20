@@ -35,6 +35,7 @@ class CameraUploadActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        Toast.makeText(this, "hello new apk release yyyy", Toast.LENGTH_SHORT).show()
         binding.loginViewModel = loginViewModel
         binding.btnUpload.setOnClickListener {
             if (checkCameraPermission()) {
