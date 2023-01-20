@@ -35,8 +35,8 @@ platform :android do
 
     end
 
-    desc "Build release app bundle"
-    lane :build_bundle do
+    desc "Build release"
+    lane :build_apk do
      gradle(
         task: "assemble",
         build_type: "Release",

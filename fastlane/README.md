@@ -39,21 +39,13 @@ clean
 
 Build dev
 
-### android beta
+### android build_apk
 
 ```sh
-[bundle exec] fastlane android beta
+[bundle exec] fastlane android build_apk
 ```
 
-Submit a new Beta Build to Crashlytics Beta
-
-### android deploy
-
-```sh
-[bundle exec] fastlane android deploy
-```
-
-Deploy a new version to the Google Play
+Build release
 
 ----
 

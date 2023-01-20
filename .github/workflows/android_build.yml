@@ -37,13 +37,13 @@ jobs:
 #        with:
 #          name: app
 #          path: app/build/outputs/apk/debug/app-debug.apk
-      - name: Build bundle
-        run: bundle exec fastlane build_bundle
+      - name: Build apk
+        run: bundle exec fastlane build_apk
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
           name: app
-          path: app/build/outputs/apk/release/app-debug.apk
+          path: app/build/outputs/apk/release/app-release.apk
 #      - name: Upload build artifacts
 #        uses: actions/upload-artifact@v2
 #        with:
