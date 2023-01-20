@@ -16,6 +16,7 @@ jobs:
       ANDROID_KEY_PASSWORD: ${{secrets.ANDROID_KEY_PASSWORD}}
       ANDROID_STORE_PASSWORD: ${{secrets.ANDROID_STORE_PASSWORD}}
       ANDROID_SIGNING_KEY: ${{secrets.ANDROID_SIGNING_KEY}}
+      ANDROID_KEYSTORE: ${{secrets.RELEASE_KEYSTORE}}
     steps:
       - uses: actions/checkout@v2
       - name: Set up ruby env
@@ -26,6 +27,11 @@ jobs:
         run: bundle install
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Create Code Signing Certificate
+        run:
+          New-Item -ItemType directory -Path certificate
+          Set-Content -Path jks\ktorcrud.txt -Value '${{ secrets.RELEASE_KEYSTORE }}'
+          certutil -decode jks\ktorcrud.txt jks\ktorcrud.jks
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
