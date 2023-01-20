@@ -17,6 +17,7 @@ jobs:
       ANDROID_STORE_PASSWORD: ${{secrets.ANDROID_STORE_PASSWORD}}
       ANDROID_SIGNING_KEY: ${{secrets.ANDROID_SIGNING_KEY}}
       ANDROID_KEYSTORE: ${{secrets.RELEASE_KEYSTORE}}
+      RUNNER_PATH: /home/runner/work/ktorDemo/ktorDemo
     steps:
       - uses: actions/checkout@v2
       - name: Set up ruby env
@@ -29,8 +30,8 @@ jobs:
         run: chmod +x gradlew
       - name: Create Code Signing Certificate
         run:
-          mkdir app/keystore
-          echo $ANDROID_KEYSTORE | base64 -di > app/keystore/ktorcrud.jks
+          mkdir "${RUNNER_PATH}"/jks
+          echo $ANDROID_KEYSTORE | base64 -di > "${RUNNER_PATH}"/jks/ktorcrud.jks
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
