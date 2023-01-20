@@ -31,7 +31,7 @@ jobs:
       - name: Decode Keystore
         uses: timheuer/base64-to-file@v1
         with:
-         fileName: "${RUNNER_PATH}"/jks/ktorcrud.jks
+         fileName: /home/runner/work/ktorDemo/ktorDemo/jks/ktorcrud.jks
          encodedString: ${{ secrets.ANDROID_KEYSTORE }}
       - name: Build apk
         run: bundle exec fastlane build_apk
