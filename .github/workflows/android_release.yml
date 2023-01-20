@@ -29,9 +29,8 @@ jobs:
         run: chmod +x gradlew
       - name: Create Code Signing Certificate
         run:
-          New-Item -ItemType directory -Path certificate
-          Set-Content -Path jks\ktorcrud.txt -Value '${{ secrets.RELEASE_KEYSTORE }}'
-          certutil -decode jks\ktorcrud.txt jks\ktorcrud.jks
+          mkdir "app/keystore"
+          echo $ANDROID_KEYSTORE | base64 -di > "app/keystore/ktorcrud.jks
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
