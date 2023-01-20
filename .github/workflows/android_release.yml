@@ -28,6 +28,11 @@ jobs:
         run: bundle install
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Decode Keystore
+        uses: timheuer/base64-to-file@v1
+        with:
+          fileName: '$RUNNER_PATH'/ktorcrud.jks
+          encodedString: ${{ secrets.ANDROID_KEYSTORE }}
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
