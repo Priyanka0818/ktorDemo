@@ -28,10 +28,6 @@ jobs:
         run: bundle install
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Create Code Signing Certificate
-        run:
-          mkdir "${RUNNER_PATH}"/jks
-          echo $ANDROID_KEYSTORE | base64 -di > "${RUNNER_PATH}"/jks/ktorcrud.jks
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
