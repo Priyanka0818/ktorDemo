@@ -28,6 +28,14 @@ jobs:
         run: bundle install
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+      - name: Configure Keystore
+        run: |
+          echo "ANDROID_KEYSTORE" > ktorcrud.jks.b64
+          base64 -d -i keystore.jks.b64 > app/jks/ktorcrud.jks
+          echo "storeFile=keystore.jks" >> keystore.properties
+          echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> keystore.properties
+          echo "storePassword=$KEYSTORE_STORE_PASSWORD" >> keystore.properties
+          echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> keystore.properties
       - name: Build apk
         run: bundle exec fastlane build_apk
       - name: Upload build artifacts
