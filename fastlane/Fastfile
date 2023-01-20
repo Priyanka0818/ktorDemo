@@ -45,12 +45,12 @@ ANDROID_STORE_PASSWORD = ENV["ANDROID_STORE_PASSWORD"]
      gradle(
         task: "assemble",
         build_type: "Release",
-        properties: {
-            "android.injected.signing.store.file" => "/home/runner/work/ktorDemo/ktorDemo/jks/ktorcrud.jks",
-            "android.injected.signing.store.password" => ANDROID_STORE_PASSWORD,
-            "android.injected.signing.key.alias" => ANDROID_KEY_ALIAS,
-            "android.injected.signing.key.password" => ANDROID_KEY_PASSWORD,
-          }
+#         properties: {
+#             "android.injected.signing.store.file" => "/home/runner/work/ktorDemo/ktorDemo/jks/ktorcrud.jks",
+#             "android.injected.signing.store.password" => ANDROID_STORE_PASSWORD,
+#             "android.injected.signing.key.alias" => ANDROID_KEY_ALIAS,
+#             "android.injected.signing.key.password" => ANDROID_KEY_PASSWORD,
+#           }
       )
     end
 #   desc "Submit a new Beta Build to Crashlytics Beta"
