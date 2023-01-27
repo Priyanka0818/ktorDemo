@@ -16,9 +16,10 @@ class UserActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        binding.loginViewModel = loginViewModel
+//        binding.loginViewModel = loginViewModel2
+/*
         lifecycleScope.launch {
-            loginViewModel.allEventsFlow.collect { event ->
+            loginViewModel2.allEventsFlow.collect { event ->
                 when (event) {
                     is AllEvents.SuccessBool -> {
                         isUpdate = event.code == 3
@@ -48,5 +49,6 @@ class UserActivity : BaseActivity() {
                 }
             }
         }
+*/
     }
 }

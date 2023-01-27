@@ -35,7 +35,7 @@ class CameraUploadActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        binding.loginViewModel = loginViewModel
+        /*binding.loginViewModel = loginViewModel
         binding.btnUpload.setOnClickListener {
             if (checkCameraPermission()) {
                 moveToCamera()
@@ -46,14 +46,15 @@ class CameraUploadActivity : BaseActivity() {
 
         binding.btnDownload.setOnClickListener {
             loginViewModel.downloadImage()
-        }
+        }*/
 
+/*
         lifecycleScope.launch {
-            loginViewModel.allEventsFlow.collect { event ->
+            loginViewModel2.allEventsFlow.collect { event ->
                 when (event) {
                     is AllEvents.Success<*> -> {
                         val fileUploadResponse = event.data as FileUploadResponse
-                        loginViewModel.filePath = fileUploadResponse.files[0].fileUrl
+                        loginViewModel2.filePath = fileUploadResponse.files[0].fileUrl
                         binding.img.setImage(fileUploadResponse.files[0].fileUrl)
                     }
                     else -> {
@@ -69,6 +70,7 @@ class CameraUploadActivity : BaseActivity() {
                 }
             }
         }
+*/
 
     }
 
@@ -109,7 +111,7 @@ class CameraUploadActivity : BaseActivity() {
     ) { result: ActivityResult ->
         if (result.resultCode == RESULT_OK) {
             // There are no request codes
-            loginViewModel.uploadImage(photoFile!!)
+//            loginViewModel2.uploadImage(photoFile!!)
         }
     }
 

@@ -1,4 +1,4 @@
-package com.app.ktorcrud.di
+package com.app.ktorcrud.apicall
 
 import android.util.Log
 import io.ktor.client.*

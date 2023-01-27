@@ -8,7 +8,7 @@
 
         <variable
             name="loginViewModel"
-            type="com.app.ktorcrud.viewmodel.LoginViewModel" />
+            type="com.app.ktorcrud.viewmodel.LoginViewModel2" />
     </data>
 
 

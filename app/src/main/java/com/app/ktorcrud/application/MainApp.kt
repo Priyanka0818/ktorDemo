@@ -1,7 +1,7 @@
 package com.app.ktorcrud.application
 
 import android.app.Application
-import com.app.ktorcrud.di.appModule
+import com.app.ktorcrud.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 
@@ -13,7 +13,7 @@ class MainApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@MainApp)
-            modules(appModule)
+            modules(apiModule, networkModule, repositoryModule, viewModelModule)
         }
     }
 }

@@ -26,15 +26,18 @@ class HomeActivity : BaseActivity() {
             startActivity(Intent(this@HomeActivity, UserActivity::class.java))
         }
 
+/*
         lifecycleScope.launch {
-            loginViewModel.getUsers()
-            loginViewModel.allEventsFlow.collect { event ->
+            loginViewModel2.getUsers()
+            loginViewModel2.allEventsFlow.collect { event ->
                 when (event) {
                     is AllEvents.Success<*> -> {
-                        /*val dashboardAdapter = DashboardAdapter(
+                        */
+/*val dashboardAdapter = DashboardAdapter(
                             event.data as ArrayList<Data>,
                             this@HomeActivity
-                        )*/
+                        )*//*
+
                         (event.data as PagingData<Data>).map {
                             Log.e("Logger", "onCreate: ${it.id!!}")
                         }
@@ -55,5 +58,6 @@ class HomeActivity : BaseActivity() {
                 }
             }
         }
+*/
     }
 }

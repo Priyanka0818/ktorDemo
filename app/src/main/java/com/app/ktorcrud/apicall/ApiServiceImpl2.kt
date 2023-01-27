@@ -16,7 +16,7 @@ import java.io.File
 /**
  * Created by Priyanka.
  */
-class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
+class ApiServiceImpl2(private val apiService: ApiService2) : ApiServiceClass {
 
     override suspend fun login(loginRequestModel: LoginRequestModel): Either<String, LoginResponse> {
         return try {

@@ -2,13 +2,11 @@ package com.app.ktorcrud.activities
 
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.app.ktorcrud.utils.ConnectionLiveData
-import com.app.ktorcrud.utils.ConnectionModel
 import com.app.ktorcrud.utils.isConnectedToInternet
 import com.app.ktorcrud.viewmodel.LoginViewModel
+import com.app.ktorcrud.viewmodel.LoginViewModel2
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
