@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.app.ktorcrud.databinding.ActivityLoginBinding
 import com.app.ktorcrud.utils.AllEvents
+import com.app.ktorcrud.utils.Utils
 import kotlinx.coroutines.launch
 
 
@@ -22,6 +23,10 @@ class LoginActivity : BaseActivity() {
                     is AllEvents.SuccessBool -> {
                         when (event.code) {
                             1 -> {
+                                sharedPreferenceUtils.preferencePutBoolean(
+                                    Utils.PreferenceKey.isLoggedIn,
+                                    true
+                                )
                                 startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                             }
                         }

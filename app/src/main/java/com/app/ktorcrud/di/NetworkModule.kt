@@ -38,7 +38,7 @@ val networkModule = module {
 
     single { provideHttpClient() }
     single {
-        val baseUrl = "https://api.upload.io/v2/accounts/FW25b1r/"
+        val baseUrl = "https://reqres.in/api/"
         provideRetrofit(get(), baseUrl)
     }
 }

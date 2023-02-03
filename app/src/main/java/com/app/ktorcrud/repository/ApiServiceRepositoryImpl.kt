@@ -3,6 +3,7 @@ package com.app.ktorcrud.repository
 import com.app.ktorcrud.apicall.ApiService
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.response.LoginResponse
+import com.app.ktorcrud.response.UsersListResponse
 import com.app.ktorcrud.utils.Either
 
 /**
@@ -14,7 +15,16 @@ class ApiServiceRepositoryImpl(val apiService: ApiService) : ApiServiceRepositor
         return if (response.isSuccessful) {
             Either.Right(response.body()!!)
         } else {
-            Either.Left("")
+            Either.Left(response.message())
+        }
+    }
+
+    override suspend fun getUserList(page: Int): Either<String, UsersListResponse> {
+        val response = apiService.getUserList(page)
+        return if (response.isSuccessful) {
+            Either.Right(response.body()!!)
+        } else {
+            Either.Left(response.message())
         }
     }
 }

@@ -8,12 +8,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.app.ktorcrud.R
-import com.app.ktorcrud.apicall.ApiServiceImpl2
 import com.app.ktorcrud.datasource.PAGE_SIZE
 import com.app.ktorcrud.datasource.UserDatasource
 import com.app.ktorcrud.repository.ApiServiceRepository
 import com.app.ktorcrud.request.LoginRequestModel
-import com.app.ktorcrud.request.UpdateUserRequest
 import com.app.ktorcrud.response.FileUploadResult
 import com.app.ktorcrud.utils.AllEvents
 import com.app.ktorcrud.utils.validateEmail
@@ -30,13 +28,10 @@ class LoginViewModel(val apiServiceRepository: ApiServiceRepository) :
 
     val isNetworkAvailable = MutableLiveData<Boolean?>()
     var email = ObservableField<String>()
-    var progress = ObservableField<Int>()
     var password = ObservableField<String>()
     var name = ObservableField<String>()
-    var job = ObservableField<String>()
     internal val eventsChannel = Channel<AllEvents>()
     val allEventsFlow = eventsChannel.receiveAsFlow()
-    var filePath = ""
 
 
     fun login() {
@@ -71,6 +66,45 @@ class LoginViewModel(val apiServiceRepository: ApiServiceRepository) :
                             eventsChannel.send(AllEvents.Loading(false))
                             eventsChannel.send(AllEvents.SuccessBool(true, 1))
                         }
+                }
+            }
+        }
+    }
+
+    private val pagedUserListLiveData =
+        Pager(PagingConfig(pageSize = PAGE_SIZE), pagingSourceFactory = {
+            UserDatasource(apiServiceRepository) {
+                viewModelScope.launch {
+                    eventsChannel.send(AllEvents.DynamicError(it.error))
+                }
+            }
+        }).flow
+
+
+    fun getUsers() {
+        viewModelScope.launch {
+            when {
+                !isNetworkAvailable.value!! -> {
+                    eventsChannel.send(AllEvents.StringResource(R.string.noInternet))
+                }
+                else -> {
+                    apiServiceRepository.getUserList(1).either({
+                        eventsChannel.send(AllEvents.DynamicError(it))
+                    }, {
+                        eventsChannel.send(AllEvents.SuccessBool(true, 2))
+                        eventsChannel.send(AllEvents.Success(it.data))
+                    })
+
+
+                  /*  eventsChannel.send(AllEvents.Loading(true))
+                    pagedUserListLiveData.collect {
+                        viewModelScope.launch {
+                            eventsChannel.send(AllEvents.Loading(false))
+//                            userListResponse.postValue(it)
+                            eventsChannel.send(AllEvents.SuccessBool(true, 2))
+                            eventsChannel.send(AllEvents.Success(it))
+                        }
+                    }*/
                 }
             }
         }

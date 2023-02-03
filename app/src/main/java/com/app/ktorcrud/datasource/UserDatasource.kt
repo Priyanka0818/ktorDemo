@@ -3,16 +3,16 @@ package com.app.ktorcrud.datasource
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.app.ktorcrud.apicall.ApiServiceImpl2
-import com.app.ktorcrud.apicall.errorMessage
+import com.app.ktorcrud.repository.ApiServiceRepository
 import com.app.ktorcrud.response.Data
 import com.app.ktorcrud.response.UsersListResponse
 import com.app.ktorcrud.utils.AllEvents
+import com.app.ktorcrud.utils.errorMessage
 
 const val PAGE_SIZE = 6
 
 class UserDatasource(
-    private val apiService: ApiServiceImpl2,
+    private val apiService: ApiServiceRepository,
     val exceptionCallback: (AllEvents.DynamicError) -> Unit
 ) :
     PagingSource<Int, Any>() {
@@ -41,12 +41,13 @@ class UserDatasource(
                     userListResponse.postValue(userModel?.data)
                 }
             } else {
+                userModel=null
                 nextPage = null
             }
             return LoadResult.Page(
                 data = userModel?.data ?: emptyList(),
-                prevKey = if (nextPage == 1) null else nextPage!! - 1,
-                nextKey = nextPage + 1
+                prevKey = if (nextPage == 1 || nextPage == null) null else nextPage - 1,
+                nextKey = if (nextPage == null) null else nextPage + 1
             )
         } catch (e: Exception) {
             exceptionCallback(AllEvents.DynamicError(e.errorMessage()))

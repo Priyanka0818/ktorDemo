@@ -7,7 +7,12 @@ import android.os.Build
 import android.util.Patterns
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.app.ktorcrud.response.CommonErrorResponse
 import com.bumptech.glide.Glide
+import com.google.gson.Gson
+import io.ktor.client.features.*
+import io.ktor.client.statement.*
+import java.nio.charset.Charset
 
 /**
  * Created by Priyanka.
@@ -42,4 +47,38 @@ fun ImageView.setImage(resource: Any) {
         .with(this)
         .load(resource)
         .into(this)
+}
+
+
+suspend fun Exception.errorMessage() =
+    when (this) {
+        is ResponseException -> {
+            if (response.status.value == 404) {
+                response.status.description
+            } else {
+                Gson().fromJson(
+                    response.readText(Charset.defaultCharset()),
+                    CommonErrorResponse::class.java
+                ).error!!
+            }
+        }
+        else -> {
+            localizedMessage!!
+        }
+    }
+
+
+fun Exception.toCustomExceptions() = when (this) {
+    is ServerResponseException -> Failure.HttpErrorInternalServerError(this)
+    is ClientRequestException ->
+        when (this.response.status.value) {
+            400 -> Failure.HttpErrorBadRequest(this)
+            401 -> Failure.HttpErrorUnauthorized(this)
+            403 -> Failure.HttpErrorForbidden(this)
+            404 -> Failure.HttpErrorNotFound(this)
+            405 -> Failure.MethodNotAllowed(this)
+            else -> Failure.HttpError(this)
+        }
+    is RedirectResponseException -> Failure.HttpError(this)
+    else -> Failure.GenericError(this)
 }
