@@ -96,17 +96,28 @@ class LoginViewModel(val apiServiceRepository: ApiServiceRepository) :
                     })
 
 
-                  /*  eventsChannel.send(AllEvents.Loading(true))
-                    pagedUserListLiveData.collect {
-                        viewModelScope.launch {
-                            eventsChannel.send(AllEvents.Loading(false))
-//                            userListResponse.postValue(it)
-                            eventsChannel.send(AllEvents.SuccessBool(true, 2))
-                            eventsChannel.send(AllEvents.Success(it))
-                        }
-                    }*/
+                    /*  eventsChannel.send(AllEvents.Loading(true))
+                      pagedUserListLiveData.collect {
+                          viewModelScope.launch {
+                              eventsChannel.send(AllEvents.Loading(false))
+  //                            userListResponse.postValue(it)
+                              eventsChannel.send(AllEvents.SuccessBool(true, 2))
+                              eventsChannel.send(AllEvents.Success(it))
+                          }
+                      }*/
                 }
             }
+        }
+    }
+
+    fun uploadImage(file: File) {
+        viewModelScope.launch {
+            apiServiceRepository.uploadImage(file).either({
+                eventsChannel.send(AllEvents.DynamicError(it.errors[0].error?.message!!))
+            }, {
+                eventsChannel.send(AllEvents.SuccessBool(true, 2))
+                eventsChannel.send(AllEvents.Success(it))
+            })
         }
     }
 }

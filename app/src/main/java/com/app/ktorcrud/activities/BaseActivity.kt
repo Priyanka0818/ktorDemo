@@ -1,5 +1,6 @@
 package com.app.ktorcrud.activities
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,13 +22,15 @@ open class BaseActivity : AppCompatActivity() {
 
     val loginViewModel: LoginViewModel by viewModel()
 
+    val sharedPreference: SharedPreferences by inject()
     val sharedPreferenceUtils: SharedPreferenceUtils by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loginViewModel.isNetworkAvailable.value = isConnectedToInternet()
         connectionLiveData = ConnectionLiveData(this)
-        connectionLiveData?.observe(this
+        connectionLiveData?.observe(
+            this
         ) { connection ->
             if (connection?.getIsConnected()!!) {
                 loginViewModel.isNetworkAvailable.value = true

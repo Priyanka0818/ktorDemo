@@ -1,18 +1,25 @@
 package com.app.ktorcrud.utils
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Environment
 import android.util.Patterns
 import android.widget.ImageView
+import androidx.core.app.ActivityCompat
 import androidx.databinding.BindingAdapter
 import com.app.ktorcrud.response.CommonErrorResponse
 import com.bumptech.glide.Glide
 import com.google.gson.Gson
 import io.ktor.client.features.*
 import io.ktor.client.statement.*
+import java.io.File
 import java.nio.charset.Charset
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.jar.Manifest
 
 /**
  * Created by Priyanka.
@@ -81,4 +88,20 @@ fun Exception.toCustomExceptions() = when (this) {
         }
     is RedirectResponseException -> Failure.HttpError(this)
     else -> Failure.GenericError(this)
+}
+
+
+fun Context.checkPermission(permission: String) =
+    ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
+
+fun Context.createImageFile(): File {
+    // Create an image file name
+    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!
+    return File.createTempFile(
+        "JPEG_${timeStamp}_", /* prefix */
+        ".jpg", /* suffix */
+        storageDir /* directory */
+    )
 }
