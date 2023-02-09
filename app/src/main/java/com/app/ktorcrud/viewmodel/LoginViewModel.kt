@@ -9,13 +9,12 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.app.ktorcrud.R
 import com.app.ktorcrud.apicall.ApiServiceImpl
+import com.app.ktorcrud.apicall.errorMessage2
 import com.app.ktorcrud.datasource.PAGE_SIZE
 import com.app.ktorcrud.datasource.UserDatasource
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
-import com.app.ktorcrud.response.Data
 import com.app.ktorcrud.response.FileUploadResult
-import com.app.ktorcrud.response.LoginResponse
 import com.app.ktorcrud.utils.AllEvents
 import com.app.ktorcrud.utils.validateEmail
 import kotlinx.coroutines.channels.Channel
@@ -167,7 +166,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                     }
                     else -> {
                         it as FileUploadResult.Error
-                        eventsChannel.send(AllEvents.DynamicError(it.message))
+                        eventsChannel.send(AllEvents.DynamicError(it.message.errors[0].error.message))
                     }
                 }
             }
@@ -189,7 +188,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                     }
                     else -> {
                         it as FileUploadResult.Error
-                        eventsChannel.send(AllEvents.DynamicError(it.message))
+//                        eventsChannel.send(AllEvents.DynamicError(it.message))
                     }
                 }
             }

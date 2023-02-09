@@ -49,7 +49,7 @@ class UserDatasource(
                 nextKey = nextPage + 1
             )
         } catch (e: Exception) {
-            exceptionCallback(AllEvents.DynamicError(e.errorMessage()))
+            exceptionCallback(AllEvents.DynamicError(e.errorMessage() as String))
             return LoadResult.Error(e)
         }
     }

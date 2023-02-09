@@ -1,5 +1,6 @@
 package com.app.ktorcrud.apicall
 
+import android.util.Log
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
 import com.app.ktorcrud.response.*
@@ -22,7 +23,7 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         return try {
             Either.Right(apiService.login(loginRequestModel))
         } catch (ex: Exception) {
-            Either.Left(ex.errorMessage())
+            Either.Left(ex.errorMessage() as String)
         }
     }
 
@@ -30,7 +31,7 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         return try {
             Either.Right(apiService.getUsers(page))
         } catch (ex: Exception) {
-            Either.Left(ex.errorMessage())
+            Either.Left(ex.errorMessage() as String)
         }
     }
 
@@ -41,7 +42,7 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         return try {
             Either.Right(apiService.updateUsers(page, updateUserRequest))
         } catch (ex: Exception) {
-            Either.Left(ex.errorMessage())
+            Either.Left(ex.errorMessage() as String)
         }
     }
 
@@ -49,7 +50,7 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
         return try {
             Either.Right(apiService.deleteUsers(page))
         } catch (ex: Exception) {
-            Either.Left(ex.errorMessage())
+            Either.Left(ex.errorMessage() as String)
         }
     }
 
@@ -63,8 +64,14 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
 }
 
 
-suspend fun Exception.errorMessage() =
+suspend fun Exception.errorMessage(): Any =
     when (this) {
+        is ClientRequestException -> {
+            Gson().fromJson(
+                response.readText(Charset.defaultCharset()),
+                FileUploadErrorResponse::class.java
+            )
+        }
         is ResponseException -> {
             if (response.status.value == 404) {
                 response.status.description

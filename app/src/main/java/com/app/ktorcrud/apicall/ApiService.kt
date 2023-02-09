@@ -1,5 +1,6 @@
 package com.app.ktorcrud.apicall
 
+import android.util.Log
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
 import com.app.ktorcrud.response.*
@@ -22,26 +23,29 @@ class ApiService(private val client: HttpClient) {
 
     fun uploadImage(file: File): Flow<FileUploadResult> {
         return channelFlow {
-            val response: FileUploadResponse = client.post {
-                url(ApiRoutes.UPLOAD_IMAGE)
-                body = MultiPartFormDataContent(
-                    formData {
-                        append("file", file.readBytes(), Headers.build {
-                            append(HttpHeaders.ContentType, "image/jpg")
-                            append(HttpHeaders.ContentDisposition, "filename=" + file.name)
-                        })
-                    }
-                )
-                onUpload { bytesSentTotal, contentLength ->
-                    val progress = (bytesSentTotal * 100f / contentLength).roundToInt()
-                    send(FileUploadResult.Progress(progress))
-                }
-            }
-
             try {
+                Log.e("TAG", "uploadImage: Success")
+
+                val response: FileUploadResponse = client.post {
+                    url(ApiRoutes.UPLOAD_IMAGE)
+                    body = MultiPartFormDataContent(
+                        formData {
+                            append("file", file.readBytes(), Headers.build {
+                                append(HttpHeaders.ContentType, "image/jpg")
+                                append(HttpHeaders.ContentDisposition, "filename=" + file.name)
+                            })
+                        }
+                    )
+                    onUpload { bytesSentTotal, contentLength ->
+                        val progress = (bytesSentTotal * 100f / contentLength).roundToInt()
+                        send(FileUploadResult.Progress(progress))
+                    }
+                }
                 send(FileUploadResult.Success(response))
-            } catch (e: Exception) {
-                send(FileUploadResult.Error(e.errorMessage()))
+
+            } catch (e: ClientRequestException) {
+                Log.e("TAG", "uploadImage: Exception")
+                send(FileUploadResult.Error(e.errorMessage() as FileUploadErrorResponse))
             }
         }
     }
@@ -61,7 +65,7 @@ class ApiService(private val client: HttpClient) {
             try {
                 send(FileUploadResult.Success(response as FileUploadResponse))
             } catch (e: Exception) {
-                send(FileUploadResult.Error(e.errorMessage()))
+//                send(FileUploadResult.Error(e.errorMessage()))
             }
         }
     }
