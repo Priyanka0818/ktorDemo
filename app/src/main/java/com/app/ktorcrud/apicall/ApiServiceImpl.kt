@@ -67,10 +67,7 @@ class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
 suspend fun Exception.errorMessage(): Any =
     when (this) {
         is ClientRequestException -> {
-            Gson().fromJson(
-                response.readText(Charset.defaultCharset()),
-                FileUploadErrorResponse::class.java
-            )
+            response.readText(Charset.defaultCharset())
         }
         is ResponseException -> {
             if (response.status.value == 404) {

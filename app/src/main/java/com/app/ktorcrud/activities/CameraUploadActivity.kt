@@ -4,16 +4,20 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.registerForActivityResult
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.app.ktorcrud.BuildConfig
 import com.app.ktorcrud.databinding.ActivityCameraUploadBinding
@@ -47,14 +51,17 @@ class CameraUploadActivity : BaseActivity() {
         binding.btnDownload.setOnClickListener {
             loginViewModel.downloadImage()
         }
+        binding.btnGallery.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
 
         lifecycleScope.launch {
             loginViewModel.allEventsFlow.collect { event ->
                 when (event) {
                     is AllEvents.Success<*> -> {
                         val fileUploadResponse = event.data as FileUploadResponse
-                        loginViewModel.filePath = fileUploadResponse.files[0].fileUrl
-                        binding.img.setImage(fileUploadResponse.files[0].fileUrl)
+                        loginViewModel.filePath = fileUploadResponse.data?.media!!
+                        binding.img.setImage(fileUploadResponse.data.media!!)
                     }
                     else -> {
                         val asString = event.asString(this@CameraUploadActivity)
@@ -72,13 +79,19 @@ class CameraUploadActivity : BaseActivity() {
 
     }
 
+    private val cameraPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            if (it) {
+                moveToCamera()
+            } else {
+                askCameraPermission()
+            }
+        }
+
     private fun askCameraPermission() {
-        ActivityCompat.requestPermissions(
-            this@CameraUploadActivity, arrayOf(
-                Manifest.permission.CAMERA
-            ), 101
-        )
+        cameraPermission.launch(Manifest.permission.CAMERA)
     }
+
 
     private fun moveToCamera() {
         photoFile = try {
@@ -129,5 +142,18 @@ class CameraUploadActivity : BaseActivity() {
         }
         Log.e("TAG", "createImageFile: $currentPhotoPath")
         return file!!
+    }
+
+
+    val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        // Callback is invoked after the user selects a media item or closes the
+        // photo picker.
+        if (uri != null) {
+            binding.img.setImage(uri)
+            loginViewModel.uploadImage(uri.toFile())
+            Log.d("PhotoPicker", "Selected URI: $uri")
+        } else {
+            Log.d("PhotoPicker", "No media selected")
+        }
     }
 }

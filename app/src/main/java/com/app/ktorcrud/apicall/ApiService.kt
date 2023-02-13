@@ -4,6 +4,8 @@ import android.util.Log
 import com.app.ktorcrud.request.LoginRequestModel
 import com.app.ktorcrud.request.UpdateUserRequest
 import com.app.ktorcrud.response.*
+import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import io.ktor.client.*
 import io.ktor.client.features.*
@@ -30,10 +32,11 @@ class ApiService(private val client: HttpClient) {
                     url(ApiRoutes.UPLOAD_IMAGE)
                     body = MultiPartFormDataContent(
                         formData {
-                            append("file", file.readBytes(), Headers.build {
+                            append("media", file.readBytes(), Headers.build {
                                 append(HttpHeaders.ContentType, "image/jpg")
                                 append(HttpHeaders.ContentDisposition, "filename=" + file.name)
                             })
+                            append("key", "00002f4d503220b5ce0ed12f47278086")
                         }
                     )
                     onUpload { bytesSentTotal, contentLength ->
@@ -41,11 +44,16 @@ class ApiService(private val client: HttpClient) {
                         send(FileUploadResult.Progress(progress))
                     }
                 }
-                send(FileUploadResult.Success(response))
+                if (response.status == 200) {
+                    send(FileUploadResult.Success(response))
+                } else {
+                    send(FileUploadResult.Error(response.error?.message!!))
+                }
 
             } catch (e: ClientRequestException) {
-                Log.e("TAG", "uploadImage: Exception")
-                send(FileUploadResult.Error(e.errorMessage() as FileUploadErrorResponse))
+                send(FileUploadResult.Error(e.errorMessage().toString()))
+            } catch (e: Exception) {
+                Log.e("TAG", "uploadImage: Exception$e")
             }
         }
     }

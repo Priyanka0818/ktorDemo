@@ -6,7 +6,7 @@ package com.app.ktorcrud.response
 sealed class FileUploadResult {
     data class Success(val data: FileUploadResponse) : FileUploadResult()
 
-    data class Error(val message: FileUploadErrorResponse) : FileUploadResult()
+    data class Error(val message: String) : FileUploadResult()
 
     data class Progress(val progress: Int) : FileUploadResult()
 }

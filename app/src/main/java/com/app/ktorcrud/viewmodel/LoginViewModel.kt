@@ -9,7 +9,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.app.ktorcrud.R
 import com.app.ktorcrud.apicall.ApiServiceImpl
-import com.app.ktorcrud.apicall.errorMessage2
 import com.app.ktorcrud.datasource.PAGE_SIZE
 import com.app.ktorcrud.datasource.UserDatasource
 import com.app.ktorcrud.request.LoginRequestModel
@@ -166,7 +165,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                     }
                     else -> {
                         it as FileUploadResult.Error
-                        eventsChannel.send(AllEvents.DynamicError(it.message.errors[0].error.message))
+                        eventsChannel.send(AllEvents.DynamicError(it.message))
                     }
                 }
             }

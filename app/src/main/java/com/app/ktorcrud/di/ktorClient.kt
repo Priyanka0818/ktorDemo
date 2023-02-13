@@ -20,7 +20,7 @@ val ktorHttpClient = HttpClient(Android) {
 
     defaultRequest {
 //        host = "reqres.in/api"
-        host = "api.upload.io/v2/accounts/FW25b1r"
+        host = "thumbsnap.com/api"
 //        host = "upcdn.io/FW25b1r"
         url {
             protocol = URLProtocol.HTTPS

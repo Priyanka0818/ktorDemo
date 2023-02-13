@@ -1,16 +1,15 @@
 package com.app.ktorcrud.response
 
-data class FileUploadErrorResponse(
-    val errors: List<Errors>
-)
+import kotlinx.serialization.Serializable
 
-data class Errors(
-    val error: Error,
-    val formDataFieldName: String
-)
+@Serializable
+class FileUploadErrorResponse {
+    val error: Error? = null
+    val success: Boolean? = null
+    val status: Int? = null
 
-
-data class Error(
-    val code: String,
-    val message: String
-)
+    @Serializable
+    class Error {
+        val message: String? = null
+    }
+}

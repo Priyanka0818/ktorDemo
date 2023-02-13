@@ -3,14 +3,24 @@ package com.app.ktorcrud.response
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FileUploadResponse(
-    val files: ArrayList<File>
-)
+class FileUploadResponse {
+    val data: Data? = null
+    val success: Boolean? = null
+    val status: Int? = null
+    val error: Error? = null
 
-@Serializable
-data class File(
-    val accountId: String,
-    val filePath: String,
-    val fileUrl: String,
-    val formDataFieldName: String
-)
+    @Serializable
+    class Data {
+        var id: String? = null
+        var url: String? = null
+        var media: String? = null
+        var thumb: String? = null
+        var width: Int? = null
+        var height: Int? = null
+    }
+
+    @Serializable
+    class Error {
+        val message: String? = null
+    }
+}
