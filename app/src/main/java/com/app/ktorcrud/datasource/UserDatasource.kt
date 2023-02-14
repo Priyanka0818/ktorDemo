@@ -41,12 +41,13 @@ class UserDatasource(
                     userListResponse.postValue(userModel?.data)
                 }
             } else {
+                userModel=null
                 nextPage = null
             }
             return LoadResult.Page(
                 data = userModel?.data ?: emptyList(),
-                prevKey = if (nextPage == 1) null else nextPage!! - 1,
-                nextKey = nextPage + 1
+                prevKey = if (nextPage == 1 || nextPage == null) null else nextPage - 1,
+                nextKey = if (nextPage == null) null else nextPage + 1
             )
         } catch (e: Exception) {
             exceptionCallback(AllEvents.DynamicError(e.errorMessage() as String))

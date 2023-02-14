@@ -39,7 +39,7 @@ class HomeActivity : BaseActivity() {
                             Log.e("Logger", "onCreate: ${it.id!!}")
                         }
                         val dashboardAdapter = DashboardAdapterPagination(this@HomeActivity)
-                        dashboardAdapter.submitData(lifecycle, event.data as PagingData<Data>)
+                        dashboardAdapter.submitData(lifecycle, event.data)
                         binding.rvSpends.adapter = dashboardAdapter
                     }
                     else -> {

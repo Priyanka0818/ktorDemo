@@ -8,6 +8,7 @@ import android.util.Patterns
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import java.io.File
 
 /**
  * Created by Priyanka.
@@ -43,3 +44,5 @@ fun ImageView.setImage(resource: Any) {
         .load(resource)
         .into(this)
 }
+
+fun String.toFile() = File(this)

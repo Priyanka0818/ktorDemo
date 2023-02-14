@@ -1,31 +1,38 @@
 package com.app.ktorcrud.activities
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.registerForActivityResult
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import androidx.core.net.toFile
 import androidx.lifecycle.lifecycleScope
 import com.app.ktorcrud.BuildConfig
 import com.app.ktorcrud.databinding.ActivityCameraUploadBinding
 import com.app.ktorcrud.response.FileUploadResponse
 import com.app.ktorcrud.utils.AllEvents
 import com.app.ktorcrud.utils.setImage
+import com.app.ktorcrud.utils.toFile
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -48,9 +55,6 @@ class CameraUploadActivity : BaseActivity() {
             }
         }
 
-        binding.btnDownload.setOnClickListener {
-            loginViewModel.downloadImage()
-        }
         binding.btnGallery.setOnClickListener {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
@@ -79,10 +83,42 @@ class CameraUploadActivity : BaseActivity() {
 
     }
 
+    fun saveToInternalStorage(context: Context, bitmapImage: Bitmap): String? {
+        try {
+            val directory = context.cacheDir.absolutePath
+            val mypath = File(directory + "/" + System.currentTimeMillis() + "profile.jpg")
+            var fos: FileOutputStream? = null
+            fos = FileOutputStream(mypath)
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.close()
+            return mypath.absolutePath
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return ""
+    }
+
     private val cameraPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             if (it) {
                 moveToCamera()
+            } else if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                    this@CameraUploadActivity,
+                    Manifest.permission.CAMERA
+                )
+            ) {
+                AlertDialog.Builder(this).apply {
+                    setCancelable(true)
+                    setMessage("mandatory_permission_access_required")
+                    setPositiveButton("OK") { dialog, _ ->
+                        dialog.dismiss()
+                        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                        val uri = Uri.fromParts("package", packageName, null)
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                }.show()
             } else {
                 askCameraPermission()
             }
@@ -149,11 +185,26 @@ class CameraUploadActivity : BaseActivity() {
         // Callback is invoked after the user selects a media item or closes the
         // photo picker.
         if (uri != null) {
-            binding.img.setImage(uri)
-            loginViewModel.uploadImage(uri.toFile())
-            Log.d("PhotoPicker", "Selected URI: $uri")
+            Glide
+                .with(this@CameraUploadActivity)
+                .asBitmap()
+                .load(uri!!)
+                .into(object : CustomTarget<Bitmap?>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap?>?
+                    ) {
+                        val imagePath =
+                            saveToInternalStorage(this@CameraUploadActivity, resource)!!
+                        loginViewModel.uploadImage(imagePath.toFile())
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+
+                    }
+
+                })
         } else {
-            Log.d("PhotoPicker", "No media selected")
         }
     }
 }

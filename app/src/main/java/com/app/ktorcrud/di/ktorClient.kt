@@ -19,9 +19,8 @@ private const val TIME_OUT = 60_000
 val ktorHttpClient = HttpClient(Android) {
 
     defaultRequest {
-//        host = "reqres.in/api"
-        host = "thumbsnap.com/api"
-//        host = "upcdn.io/FW25b1r"
+        host = "reqres.in/api"
+//        host = "thumbsnap.com/api"
         url {
             protocol = URLProtocol.HTTPS
         }
