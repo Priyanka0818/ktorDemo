@@ -9,8 +9,6 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_splash)
-// Keep the splash screen visible for this Activity
         splashScreen.setKeepOnScreenCondition { true }
         if (sharedPreferenceUtils.preferenceGetBoolean(Utils.PreferenceKey.isLoggedIn, false)) {
             startActivity(Intent(this@SplashActivity, HomeActivity::class.java))
