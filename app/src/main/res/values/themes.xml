@@ -10,13 +10,14 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorAccent">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary</item>
+        <item name="android:windowBackground">@android:color/white</item>
         <item name="android:forceDarkAllowed">true</item>
     </style>
 
 
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/darker_gray</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_background</item>
+        <item name="windowSplashScreenBackground">@android:color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
         <item name="windowSplashScreenAnimationDuration">300</item>
         <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
