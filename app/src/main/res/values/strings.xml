@@ -7,5 +7,6 @@
     <string name="error_password_empty">Please Enter Password</string>
     <string name="error_email_invalid">Please Enter Valid Email Address</string>
     <string name="enter_email">Please Enter Email Address</string>
+    <string name="title_activity_navigation">NavigationActivity</string>
 
 </resources>

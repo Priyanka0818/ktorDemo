@@ -17,6 +17,7 @@ import com.app.ktorcrud.response.FileUploadResult
 import com.app.ktorcrud.utils.AllEvents
 import com.app.ktorcrud.utils.validateEmail
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.io.File
@@ -36,6 +37,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
     internal val eventsChannel = Channel<AllEvents>()
     val allEventsFlow = eventsChannel.receiveAsFlow()
     var filePath = ""
+    val users= MutableStateFlow<AllEvents>(AllEvents.Loading)
 
 
     fun login() {
@@ -59,15 +61,15 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                     eventsChannel.send(AllEvents.StringResource(R.string.error_password_empty))
                 }
                 else -> {
-                    eventsChannel.send(AllEvents.Loading(true))
+//                    eventsChannel.send(AllEvents.Loading(true))
                     apiServiceImpl.login(LoginRequestModel(emailString, passString))
                         .either(
                             {
-                                eventsChannel.send(AllEvents.Loading(false))
+//                                eventsChannel.send(AllEvents.Loading(false))
                                 eventsChannel.send(AllEvents.DynamicError(it))
                             }
                         ) {
-                            eventsChannel.send(AllEvents.Loading(false))
+//                            eventsChannel.send(AllEvents.Loading(false))
                             eventsChannel.send(AllEvents.SuccessBool(true, 1))
                         }
                 }
@@ -89,17 +91,16 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
         viewModelScope.launch {
             when {
                 !isNetworkAvailable.value!! -> {
-                    eventsChannel.send(AllEvents.StringResource(R.string.noInternet))
+                    users.value=AllEvents.StringResource(R.string.noInternet)
+//                    eventsChannel.send(AllEvents.StringResource(R.string.noInternet))
                 }
                 else -> {
-                    eventsChannel.send(AllEvents.Loading(true))
-                    pagedUserListLiveData.collect {
-                        viewModelScope.launch {
-                            eventsChannel.send(AllEvents.Loading(false))
-//                            userListResponse.postValue(it)
-                            eventsChannel.send(AllEvents.SuccessBool(true, 2))
-                            eventsChannel.send(AllEvents.Success(it))
-                        }
+                    apiServiceImpl.getUserList(1).either({
+                        users.value=AllEvents.DynamicError(it)
+                        it
+                    }) {
+                        users.value=AllEvents.Success(it.data)
+                        it
                     }
                 }
             }
