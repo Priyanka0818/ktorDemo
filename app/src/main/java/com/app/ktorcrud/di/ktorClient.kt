@@ -10,6 +10,8 @@ import io.ktor.client.features.logging.*
 import io.ktor.client.features.observer.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import android.os.Bundle
+import com.app.ktorcrud.BuildConfig
 
 /**
  * Created by Priyanka.
@@ -56,6 +58,6 @@ val ktorHttpClient = HttpClient(Android) {
     }
 
     install(DefaultRequest) {
-        header(HttpHeaders.Authorization, "Bearer public_FW25b1r73Z92jneE6jRB9JVpkRRn")
+        header(HttpHeaders.Authorization, "Bearer ${BuildConfig.TOKEN}")
     }
 }
