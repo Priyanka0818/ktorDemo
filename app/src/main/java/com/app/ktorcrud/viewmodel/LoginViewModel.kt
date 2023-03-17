@@ -93,6 +93,19 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                 }
                 else -> {
                     eventsChannel.send(AllEvents.Loading(true))
+                    apiServiceImpl.getUserList(1)
+                        .either(
+                            {
+                                eventsChannel.send(AllEvents.Loading(false))
+                                eventsChannel.send(AllEvents.DynamicError(it))
+                            }
+                        ) {
+                            eventsChannel.send(AllEvents.Loading(false))
+                            eventsChannel.send(AllEvents.SuccessBool(true, 2))
+                            eventsChannel.send(AllEvents.Success(it))
+                        }
+
+/*
                     pagedUserListLiveData.collect {
                         viewModelScope.launch {
                             eventsChannel.send(AllEvents.Loading(false))
@@ -101,6 +114,7 @@ class LoginViewModel(val apiServiceImpl: ApiServiceImpl) :
                             eventsChannel.send(AllEvents.Success(it))
                         }
                     }
+*/
                 }
             }
         }

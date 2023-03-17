@@ -8,8 +8,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.app.ktorcrud.adapter.DashboardAdapterPagination
+import com.app.ktorcrud.adapter.DashboardListAdapter
 import com.app.ktorcrud.databinding.ActivityHomeBinding
 import com.app.ktorcrud.response.Data
+import com.app.ktorcrud.response.UsersListResponse
 import com.app.ktorcrud.utils.AllEvents
 import kotlinx.coroutines.launch
 
@@ -31,15 +33,12 @@ class HomeActivity : BaseActivity() {
             loginViewModel.allEventsFlow.collect { event ->
                 when (event) {
                     is AllEvents.Success<*> -> {
-                        /*val dashboardAdapter = DashboardAdapter(
-                            event.data as ArrayList<Data>,
-                            this@HomeActivity
-                        )*/
-                        (event.data as PagingData<Data>).map {
+                        val dashboardAdapter = DashboardListAdapter()
+                        /*(event.data as PagingData<Data>).map {
                             Log.e("Logger", "onCreate: ${it.id!!}")
                         }
-                        val dashboardAdapter = DashboardAdapterPagination(this@HomeActivity)
-                        dashboardAdapter.submitData(lifecycle, event.data)
+                        val dashboardAdapter = DashboardAdapterPagination(this@HomeActivity)*/
+                        dashboardAdapter.submitList(((event.data as UsersListResponse).data as MutableList<Data>))
                         binding.rvSpends.adapter = dashboardAdapter
                     }
                     else -> {
