@@ -22,13 +22,6 @@ sealed class AllEvents {
             is DynamicError -> {
                 error
             }
-            /*is Loading -> {
-                if (load) {
-                    DialogUtils.showProgressBar(context)
-                } else {
-                    DialogUtils.hideProgressBar()
-                }
-            }*/
             else -> {
                 DialogUtils.hideProgressBar()
             }

@@ -19,47 +19,12 @@ import java.io.File
  */
 class ApiServiceImpl(private val apiService: ApiService) : ApiServiceClass {
 
-    override suspend fun login(loginRequestModel: LoginRequestModel): Either<String, LoginResponse> {
-        return try {
-            Either.Right(apiService.login(loginRequestModel))
-        } catch (ex: Exception) {
-            Either.Left(ex.errorMessage() as String)
-        }
-    }
-
     override suspend fun getUserList(page: Int): Either<String, UsersListResponse> {
         return try {
             Either.Right(apiService.getUsers(page))
         } catch (ex: Exception) {
             Either.Left(ex.errorMessage() as String)
         }
-    }
-
-    override suspend fun updateUser(
-        page: Int,
-        updateUserRequest: UpdateUserRequest
-    ): Either<String, UpdateUserResponse> {
-        return try {
-            Either.Right(apiService.updateUsers(page, updateUserRequest))
-        } catch (ex: Exception) {
-            Either.Left(ex.errorMessage() as String)
-        }
-    }
-
-    override suspend fun deleteUser(page: Int): Either<String, JsonObject> {
-        return try {
-            Either.Right(apiService.deleteUsers(page))
-        } catch (ex: Exception) {
-            Either.Left(ex.errorMessage() as String)
-        }
-    }
-
-    override fun uploadImage(file: File): Flow<FileUploadResult> {
-        return apiService.uploadImage(file)
-    }
-
-    override fun downloadImage(file: String): Flow<FileUploadResult> {
-        return apiService.downloadImage(file)
     }
 }
 
