@@ -1,5 +1,6 @@
 package com.app.ktorcrud.ui
 
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -24,16 +25,19 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,13 +53,34 @@ import com.app.ktorcrud.viewmodel.LoginViewModel
  */
 
 @Composable
-fun loadUsers(loginViewModel: LoginViewModel) {
-    loginViewModel.getUsers()
+fun LoadUsers(loginViewModel: LoginViewModel, isNetworkAvailable: Boolean) {
     val state by loginViewModel.users.collectAsState()
     val textState = remember { mutableStateOf(TextFieldValue("")) }
+    var showNoInternetMessage by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isNetworkAvailable) {
+        if (!isNetworkAvailable) {
+            if (!showNoInternetMessage) {
+                loginViewModel.users.tryEmit(AllEvents.StringResource(R.string.noInternet))
+                showNoInternetMessage = true
+            }
+        } else {
+            showNoInternetMessage = false
+            loginViewModel.getUsers()
+        }
+    }
+
     when (state) {
         is AllEvents.Loading -> {
-            ProgressDialog(showDialog = true)
+            ProgressDialog(showDialog = (state as AllEvents.Loading).loading)
+        }
+
+        is AllEvents.StringResource -> {
+            Toast.makeText(
+                LocalContext.current,
+                (state as AllEvents.StringResource).asString().toString(),
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         is AllEvents.Success<*> -> {
@@ -69,10 +94,14 @@ fun loadUsers(loginViewModel: LoginViewModel) {
     }
 }
 
+@Composable
+fun NoInternet() {
+    Text("No internet")
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserActivity(userData: ArrayList<Data>, searchText: MutableState<TextFieldValue>) {
-    val users = userData
     Box() {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             CompositionLocalProvider(
@@ -83,7 +112,7 @@ fun UserActivity(userData: ArrayList<Data>, searchText: MutableState<TextFieldVa
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(10.dp)
                 ) {
-                    val userList = getFilteredUserList(searchText, users)
+                    val userList = getFilteredUserList(searchText, userData)
                     itemsIndexed(userList) { index, item ->
                         Row(modifier = Modifier.fillMaxHeight()) {
                             Image(
@@ -152,7 +181,7 @@ fun SearchView(state: MutableState<TextFieldValue>) {
         if (state.value != TextFieldValue("")) {
             IconButton(onClick = {
                 state.value =
-                    TextFieldValue("") // Remove text from TextField when you press the 'X' icon
+                    TextFieldValue("")
             }) {
                 Icon(
                     Icons.Default.Close,
