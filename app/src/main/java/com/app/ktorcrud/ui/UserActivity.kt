@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -31,7 +30,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,11 +40,17 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.rememberAsyncImagePainter
 import com.app.ktorcrud.R
 import com.app.ktorcrud.response.Data
 import com.app.ktorcrud.utils.AllEvents
 import com.app.ktorcrud.viewmodel.LoginViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 
 /**
  * Created by Priyanka.
@@ -56,16 +60,11 @@ import com.app.ktorcrud.viewmodel.LoginViewModel
 fun LoadUsers(loginViewModel: LoginViewModel, isNetworkAvailable: Boolean) {
     val state by loginViewModel.users.collectAsState()
     val textState = remember { mutableStateOf(TextFieldValue("")) }
-    var showNoInternetMessage by remember { mutableStateOf(false) }
 
     LaunchedEffect(isNetworkAvailable) {
         if (!isNetworkAvailable) {
-            if (!showNoInternetMessage) {
-                loginViewModel.users.tryEmit(AllEvents.StringResource(R.string.noInternet))
-                showNoInternetMessage = true
-            }
+            loginViewModel.users.tryEmit(AllEvents.StringResource(R.string.noInternet))
         } else {
-            showNoInternetMessage = false
             loginViewModel.getUsers()
         }
     }
@@ -84,7 +83,7 @@ fun LoadUsers(loginViewModel: LoginViewModel, isNetworkAvailable: Boolean) {
         }
 
         is AllEvents.Success<*> -> {
-            UserActivity((state as AllEvents.Success<*>).data as ArrayList<Data>, textState)
+            UserActivity((state as AllEvents.Success<*>).data as Flow<PagingData<Data>>, textState)
             ProgressDialog(showDialog = false)
         }
 
@@ -94,15 +93,11 @@ fun LoadUsers(loginViewModel: LoginViewModel, isNetworkAvailable: Boolean) {
     }
 }
 
-@Composable
-fun NoInternet() {
-    Text("No internet")
-}
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun UserActivity(userData: ArrayList<Data>, searchText: MutableState<TextFieldValue>) {
-    Box() {
+fun UserActivity(userData: Flow<PagingData<Data>>, searchText: MutableState<TextFieldValue>) {
+    val userList=userData.collectAsLazyPagingItems()
+    Box {
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             CompositionLocalProvider(
                 LocalOverscrollConfiguration provides null
@@ -112,12 +107,12 @@ fun UserActivity(userData: ArrayList<Data>, searchText: MutableState<TextFieldVa
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(10.dp)
                 ) {
-                    val userList = getFilteredUserList(searchText, userData)
-                    itemsIndexed(userList) { index, item ->
+                    items(userList.itemCount) { i ->
+                        val data = userList[i]
                         Row(modifier = Modifier.fillMaxHeight()) {
                             Image(
                                 painter = rememberAsyncImagePainter(
-                                    item.avatar
+                                    data?.avatar
                                 ),
                                 contentDescription = "",
                                 contentScale = ContentScale.Crop,
@@ -126,7 +121,7 @@ fun UserActivity(userData: ArrayList<Data>, searchText: MutableState<TextFieldVa
                                     .clip(CircleShape)
                             )
                             Text(
-                                text = "${item.first_name} ${item.last_name}",
+                                text = "${data?.first_name} ${data?.last_name}",
                                 color = Color.Red,
                                 modifier = Modifier
                                     .align(
@@ -140,27 +135,6 @@ fun UserActivity(userData: ArrayList<Data>, searchText: MutableState<TextFieldVa
             }
         }
     }
-}
-
-private fun getFilteredUserList(
-    searchText: MutableState<TextFieldValue>,
-    users: ArrayList<Data>
-): ArrayList<Data> {
-    var filteredUserList: ArrayList<Data>
-    val searchedText = searchText.value.text
-    filteredUserList = when {
-        searchedText.isNotEmpty() -> {
-            users.filter {
-                val name = "${it.first_name} ${it.last_name}"
-                name.contains(searchedText, ignoreCase = true)
-            } as ArrayList<Data>
-        }
-
-        else -> {
-            users
-        }
-    }
-    return filteredUserList
 }
 
 @Composable

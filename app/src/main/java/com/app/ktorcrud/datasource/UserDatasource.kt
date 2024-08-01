@@ -21,7 +21,6 @@ class UserDatasource(
     private var exception: String? = ""
     private val _userListResponse = MutableLiveData<ArrayList<Data>?>()
     private val userListResponse get() = _userListResponse
-    private val excep get() = MutableLiveData<String>()
     override fun getRefreshKey(state: PagingState<Int, Any>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
